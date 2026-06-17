@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Waypoint — Career Development Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- PARTICLE CANVAS -->
+  <canvas id="particleCanvas"></canvas>
+
+  <!-- AUTH SCREEN -->
+  <div id="authScreen" class="auth-screen">
+    <div class="auth-glow"></div>
+    <div class="auth-card">
+      <div class="auth-logo">
+        <div class="logo-ring">
+          <div class="logo-inner">&#10148;</div>
+        </div>
+        <h1 class="auth-title">WAYPOINT</h1>
+        <p class="auth-sub">Navigate your career journey</p>
+      </div>
+
+      <!-- Login Form -->
+      <div id="loginForm" class="auth-form active">
+        <div class="auth-tabs">
+          <button class="auth-tab active" onclick="showAuthTab('login')">Sign In</button>
+          <button class="auth-tab" onclick="showAuthTab('register')">Create Account</button>
+        </div>
+        <div class="field-group">
+          <label>USERNAME</label>
+          <div class="input-wrap">
+            <span class="input-icon">⌬</span>
+            <input type="text" id="loginUsername" placeholder="Enter username" autocomplete="username" />
+          </div>
+        </div>
+        <div class="field-group">
+          <label>PASSWORD</label>
+          <div class="input-wrap">
+            <span class="input-icon">⬡</span>
+            <input type="password" id="loginPassword" placeholder="Enter password" autocomplete="current-password" />
+          </div>
+        </div>
+        <p id="loginError" class="auth-error"></p>
+        <button class="launch-btn" onclick="handleLogin()">
+          <span>LAUNCH</span>
+          <span class="btn-arrow">→</span>
+        </button>
+      </div>
+
+      <!-- Register Form -->
+      <div id="registerForm" class="auth-form">
+        <div class="auth-tabs">
+          <button class="auth-tab" onclick="showAuthTab('login')">Sign In</button>
+          <button class="auth-tab active" onclick="showAuthTab('register')">Create Account</button>
+        </div>
+        <div class="field-group">
+          <label>YOUR NAME</label>
+          <div class="input-wrap">
+            <span class="input-icon">◈</span>
+            <input type="text" id="regName" placeholder="Display name" />
+          </div>
+        </div>
+        <div class="field-group">
+          <label>USERNAME</label>
+          <div class="input-wrap">
+            <span class="input-icon">⌬</span>
+            <input type="text" id="regUsername" placeholder="Choose a username" autocomplete="username" />
+          </div>
+        </div>
+        <div class="field-group">
+          <label>PASSWORD</label>
+          <div class="input-wrap">
+            <span class="input-icon">⬡</span>
+            <input type="password" id="regPassword" placeholder="Choose a password" autocomplete="new-password" />
+          </div>
+        </div>
+        <p id="registerError" class="auth-error"></p>
+        <button class="launch-btn" onclick="handleRegister()">
+          <span>CREATE &amp; LAUNCH</span>
+          <span class="btn-arrow">→</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN APP -->
+  <div id="appScreen" class="app hidden">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="brand">
+          <div class="brand-mark">
+            <div class="brand-ring"></div>
+            <span>&#10148;</span>
+          </div>
+          <div>
+            <h1 class="brand-name">WAYPOINT</h1>
+            <p class="brand-tagline">Plot your career, one milestone at a time.</p>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <div class="user-pill" id="userPill">
+            <div class="user-avatar" id="userAvatar">W</div>
+            <span id="userDisplayName">Waypointer</span>
+          </div>
+          <button class="logout-btn" onclick="handleLogout()">⏻</button>
+        </div>
+      </div>
+      <nav class="tabs" role="tablist">
+        <button class="tab-btn active" data-tab="dashboard">
+          <span class="tab-icon">◎</span> Dashboard
+        </button>
+        <button class="tab-btn" data-tab="skills">
+          <span class="tab-icon">⟡</span> Skills
+        </button>
+        <button class="tab-btn" data-tab="applications">
+          <span class="tab-icon">◈</span> Applications
+        </button>
+        <button class="tab-btn" data-tab="goals">
+          <span class="tab-icon">⊕</span> Goals
+        </button>
+        <button class="tab-btn" data-tab="practice">
+          <span class="tab-icon">⌬</span> Practice
+        </button>
+        <button class="tab-btn" data-tab="journal">
+          <span class="tab-icon">▤</span> Journal
+        </button>
+      </nav>
+    </header>
+
+    <main class="content">
+
+      <!-- DASHBOARD -->
+      <section class="tab-panel active" id="panel-dashboard">
+        <div class="stat-grid">
+          <div class="stat-card" data-tilt>
+            <div class="stat-glow cyan"></div>
+            <div class="stat-icon">⟡</div>
+            <span class="stat-value" id="statSkills">0</span>
+            <span class="stat-label">Skills tracked</span>
+            <div class="stat-line"></div>
+          </div>
+          <div class="stat-card" data-tilt>
+            <div class="stat-glow violet"></div>
+            <div class="stat-icon">◈</div>
+            <span class="stat-value" id="statApplications">0</span>
+            <span class="stat-label">Active applications</span>
+            <div class="stat-line"></div>
+          </div>
+          <div class="stat-card" data-tilt>
+            <div class="stat-glow green"></div>
+            <div class="stat-icon">⊕</div>
+            <span class="stat-value" id="statGoals">0</span>
+            <span class="stat-label">Goals in progress</span>
+            <div class="stat-line"></div>
+          </div>
+          <div class="stat-card urgent" data-tilt>
+            <div class="stat-glow amber"></div>
+            <div class="stat-icon">◉</div>
+            <span class="stat-value" id="statDeadlines">0</span>
+            <span class="stat-label">Deadlines this week</span>
+            <div class="stat-line amber"></div>
+          </div>
+        </div>
+
+        <div class="panel-card">
+          <div class="card-header">
+            <h2>YOUR TRAIL</h2>
+            <span class="card-badge">GOALS</span>
+          </div>
+          <p class="panel-sub">Each node is a goal. Progress fills as you move forward.</p>
+          <div id="trailTrack" class="trail-track"></div>
+          <p id="trailEmpty" class="empty-state">Add a goal to start plotting your trail →</p>
+        </div>
+
+        <div class="panel-card">
+          <div class="card-header">
+            <h2>UPCOMING DEADLINES</h2>
+            <span class="card-badge">RADAR</span>
+          </div>
+          <div id="deadlineList" class="deadline-list"></div>
+          <p id="deadlineEmpty" class="empty-state">Nothing on radar yet. Add applications or goals to track deadlines.</p>
+        </div>
+      </section>
+
+      <!-- SKILLS -->
+      <section class="tab-panel" id="panel-skills">
+        <div class="panel-card tier-legend">
+          <div class="card-header">
+            <h2>ASCENSION TIERS</h2>
+            <span class="card-badge">SYSTEM</span>
+          </div>
+          <p class="panel-sub">Every skill levels up as its progress climbs. Cross a threshold, get a moment.</p>
+          <div class="tier-legend-row" id="tierLegendRow"></div>
+          <button type="button" class="primary-btn small" id="tierPreviewBtn" style="margin-top:14px">▶ PREVIEW TIER-UP</button>
+        </div>
+        <div class="panel-card form-card">
+          <div class="card-header">
+            <h2>LOG A SKILL</h2>
+            <span class="card-badge">NEW</span>
+          </div>
+          <form id="skillForm">
+            <div class="field-row">
+              <label>SKILL NAME</label>
+              <input type="text" id="skillName" placeholder="e.g. SQL, Public Speaking, AWS Cloud Practitioner" required />
+            </div>
+            <div class="field-row split">
+              <div>
+                <label>CATEGORY</label>
+                <select id="skillCategory">
+                  <option>Technical</option>
+                  <option>Soft Skill</option>
+                  <option>Certification</option>
+                  <option>Language</option>
+                  <option>Tool</option>
+                </select>
+              </div>
+              <div>
+                <label>TARGET DATE (optional)</label>
+                <input type="date" id="skillTarget" />
+              </div>
+            </div>
+            <div class="field-row">
+              <label>PROGRESS: <span id="skillProgressVal" class="neon-text">0%</span></label>
+              <div class="range-wrap">
+                <input type="range" id="skillProgress" min="0" max="100" value="0" step="5" />
+                <div class="range-fill" id="skillRangeFill"></div>
+              </div>
+            </div>
+            <div class="field-row">
+              <label>NOTES / RESOURCE (optional)</label>
+              <input type="text" id="skillNotes" placeholder="Course, book, or link" />
+            </div>
+            <button type="submit" class="primary-btn">ADD SKILL <span>→</span></button>
+          </form>
+        </div>
+        <div class="panel-card">
+          <div class="card-header">
+            <h2>YOUR SKILLS</h2>
+            <span class="card-badge" id="skillCount">0</span>
+          </div>
+          <p id="skillsEmpty" class="empty-state">No skills tracked yet. Log your first one above.</p>
+          <div id="skillsList" class="card-list"></div>
+        </div>
+      </section>
+
+      <!-- APPLICATIONS -->
+      <section class="tab-panel" id="panel-applications">
+        <div class="panel-card form-card">
+          <div class="card-header">
+            <h2>TRACK APPLICATION</h2>
+            <span class="card-badge">NEW</span>
+          </div>
+          <form id="applicationForm">
+            <div class="field-row split">
+              <div>
+                <label>COMPANY</label>
+                <input type="text" id="appCompany" placeholder="e.g. Acme Corp" required />
+              </div>
+              <div>
+                <label>ROLE</label>
+                <input type="text" id="appRole" placeholder="e.g. Data Analyst Intern" required />
+              </div>
+            </div>
+            <div class="field-row split">
+              <div>
+                <label>STATUS</label>
+                <select id="appStatus">
+                  <option>Wishlist</option>
+                  <option>Applied</option>
+                  <option>Interview</option>
+                  <option>Offer</option>
+                  <option>Rejected</option>
+                </select>
+              </div>
+              <div>
+                <label>NEXT DEADLINE (optional)</label>
+                <input type="date" id="appDeadline" />
+              </div>
+            </div>
+            <div class="field-row">
+              <label>LINK (optional)</label>
+              <input type="url" id="appLink" placeholder="https://" />
+            </div>
+            <div class="field-row">
+              <label>NOTES (optional)</label>
+              <input type="text" id="appNotes" placeholder="Referral, interview prep, contacts..." />
+            </div>
+            <button type="submit" class="primary-btn">ADD APPLICATION <span>→</span></button>
+          </form>
+        </div>
+        <div class="panel-card">
+          <div class="panel-header-row">
+            <div class="card-header" style="margin-bottom:0">
+              <h2>YOUR APPLICATIONS</h2>
+            </div>
+            <div class="filter-pills" id="appFilters">
+              <button class="filter-pill active" data-filter="All">All</button>
+              <button class="filter-pill" data-filter="Wishlist">Wishlist</button>
+              <button class="filter-pill" data-filter="Applied">Applied</button>
+              <button class="filter-pill" data-filter="Interview">Interview</button>
+              <button class="filter-pill" data-filter="Offer">Offer</button>
+              <button class="filter-pill" data-filter="Rejected">Rejected</button>
+            </div>
+          </div>
+          <p id="applicationsEmpty" class="empty-state">No applications yet. Add your first one above.</p>
+          <div id="applicationsList" class="card-list"></div>
+        </div>
+      </section>
+
+      <!-- GOALS -->
+      <section class="tab-panel" id="panel-goals">
+        <div class="panel-card form-card">
+          <div class="card-header">
+            <h2>SET A GOAL</h2>
+            <span class="card-badge">NEW</span>
+          </div>
+          <form id="goalForm">
+            <div class="field-row">
+              <label>GOAL</label>
+              <input type="text" id="goalTitle" placeholder="e.g. Land a summer internship" required />
+            </div>
+            <div class="field-row split">
+              <div>
+                <label>CATEGORY</label>
+                <select id="goalCategory">
+                  <option>Career</option>
+                  <option>Skill Building</option>
+                  <option>Networking</option>
+                  <option>Academic</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div>
+                <label>TARGET DATE</label>
+                <input type="date" id="goalTarget" required />
+              </div>
+            </div>
+            <div class="field-row">
+              <label>NOTES (optional)</label>
+              <input type="text" id="goalNotes" placeholder="Why this matters, or how you'll get there" />
+            </div>
+            <button type="submit" class="primary-btn">ADD GOAL <span>→</span></button>
+          </form>
+        </div>
+        <div class="panel-card">
+          <div class="card-header">
+            <h2>YOUR GOALS</h2>
+            <span class="card-badge" id="goalCount">0</span>
+          </div>
+          <p id="goalsEmpty" class="empty-state">No goals yet. Add your first one above.</p>
+          <div id="goalsList" class="card-list"></div>
+        </div>
+      </section>
+
+      <!-- PRACTICE -->
+      <section class="tab-panel" id="panel-practice">
+        <div class="panel-card form-card">
+          <div class="card-header">
+            <h2>LOG A PLATFORM</h2>
+            <span class="card-badge">NEW</span>
+          </div>
+          <form id="practiceForm">
+            <div class="field-row split">
+              <div>
+                <label>PLATFORM</label>
+                <select id="practicePlatform">
+                  <option>LeetCode</option>
+                  <option>CodeChef</option>
+                  <option>Codeforces</option>
+                  <option>HackerRank</option>
+                  <option>GeeksforGeeks</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div>
+                <label>PROBLEMS SOLVED</label>
+                <input type="number" id="practiceSolved" min="0" value="0" placeholder="0" />
+              </div>
+            </div>
+            <div class="field-row split">
+              <div>
+                <label>RATING / RANK (optional)</label>
+                <input type="text" id="practiceRating" placeholder="e.g. 1547, or Top 12%" />
+              </div>
+              <div>
+                <label>PROFILE LINK (optional)</label>
+                <input type="url" id="practiceLink" placeholder="https://" />
+              </div>
+            </div>
+            <div class="field-row">
+              <label>NOTES (optional)</label>
+              <input type="text" id="practiceNotes" placeholder="Focus area, streak, current goal..." />
+            </div>
+            <button type="submit" class="primary-btn">ADD PLATFORM <span>→</span></button>
+          </form>
+        </div>
+        <div class="panel-card">
+          <div class="card-header">
+            <h2>YOUR PRACTICE LOG</h2>
+            <span class="card-badge" id="practiceCount">0</span>
+          </div>
+          <p id="practiceEmpty" class="empty-state">No practice platforms logged yet. Add LeetCode, CodeChef, or any other tracker above.</p>
+          <div id="practiceList" class="card-list"></div>
+        </div>
+      </section>
+
+      <!-- JOURNAL -->
+      <section class="tab-panel" id="panel-journal">
+        <div class="panel-card form-card">
+          <div class="card-header">
+            <h2>NEW ENTRY</h2>
+            <span class="card-badge">TODAY</span>
+          </div>
+          <form id="journalForm">
+            <div class="field-row">
+              <label>WHAT HAPPENED</label>
+              <input type="text" id="journalText" placeholder="A win, a lesson, a setback, a plan for tomorrow..." required />
+            </div>
+            <button type="submit" class="primary-btn">ADD ENTRY <span>→</span></button>
+          </form>
+        </div>
+        <div class="panel-card">
+          <div class="card-header">
+            <h2>YOUR JOURNEY LOG</h2>
+            <span class="card-badge" id="journalCount">0</span>
+          </div>
+          <p id="journalEmpty" class="empty-state">Nothing logged yet. Your first entry starts the trail.</p>
+          <div id="journalFeed" class="journal-feed"></div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="app-footer">
+      <span class="footer-dot"></span>
+      <span>All data stored privately in your browser. Nothing leaves this device.</span>
+      <span class="footer-dot"></span>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
