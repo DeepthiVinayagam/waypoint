@@ -6,6 +6,8 @@ A career development dashboard for students, built around a simple idea: your ca
 
 No backend, lightweight authentication using browser storage, and no external dependencies beyond a browser.
 
+**Live Demo:** https://deepthivinayagam.github.io/waypoint/
+
 ---
 
 ## Why this exists
